@@ -92,7 +92,7 @@ typedef NTSTATUS(NTAPI* pZwUnmapViewOfSection)(
     PVOID BaseAddress
     );
 
-// get process PID
+// 由文件名找对应进程id
 int findMyProc(const char* procname) {
 
     HANDLE hSnapshot;
@@ -114,8 +114,7 @@ int findMyProc(const char* procname) {
         }
         hResult = Process32Next(hSnapshot, &pe);
     }
-
-    // closes an open handle (CreateToolhelp32Snapshot)
+  
     CloseHandle(hSnapshot);
     return pid;
 }
