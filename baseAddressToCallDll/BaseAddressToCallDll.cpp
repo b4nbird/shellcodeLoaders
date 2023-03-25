@@ -1,4 +1,4 @@
-﻿#include <windows.h>
+#include <windows.h>
 #include <stdio.h>
 
 typedef struct _UNICODE_STRING {
@@ -78,13 +78,13 @@ static HMODULE getKernel32(DWORD myHash) {
     auto kernelBaseAddr = 0x10; // LDR_DATA_TABLE_ENTRY结构中映像基地址的偏移量
 
     // 获取PEB_LDR_DATA结构中的模块列表指针
-    auto mdllist = (INT_PTR)(peb + modList);
+    auto mdllist = *(INT_PTR*)(peb + modList);
 
     // 获取第一个模块的LDR_DATA_TABLE_ENTRY结构中的下一个模块的指针
-    auto mlink = (INT_PTR)(mdllist + modListFlink);
+    auto mlink = *(INT_PTR*)(mdllist + modListFlink);
 
     // 获取kernel32.dll的基地址
-    auto krnbase = (INT_PTR)(mlink + kernelBaseAddr);
+    auto krnbase = *(INT_PTR*)(mlink + kernelBaseAddr);
 
     auto mdl = (LDR_MODULE*)mlink;
 
