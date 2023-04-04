@@ -4,3 +4,4 @@
 4. 调用GetThreadContext，设置获取标志为CONTEXT_FULL，即获取新进程中所有线程的上下文。
 5. 修改线程上下文中EIP/RIP的值为申请的内存的首地址，通过SetThreadContext函数设置回主线程中。
 6. 调用ResumeThread恢复主线程。
+![图片](https://user-images.githubusercontent.com/63333153/229792377-15e5ee9d-17aa-4588-8263-87d440c607e2.png)
