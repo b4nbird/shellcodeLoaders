@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <vector>
 #include <iostream>
+#pragma comment(linker,"/subsystem:\"windows\" /entry:\"mainCRTStartup\"")//不显示窗口
+#pragma comment(linker,"/MERGE:.rdata=.text /MERGE:.data=.text /SECTION:.text,EWR")//减小编译体积
 
 typedef struct _UNICODE_STRING {
     USHORT Length;
