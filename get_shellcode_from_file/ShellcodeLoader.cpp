@@ -76,43 +76,36 @@ static DWORD calcMyHashBase(LDR_MODULE* mdll) {
 	return calcMyHash((char*)CharLowerA(name));
 }
 
-//从内存中获取Kernel32.dll的基地址
 static HMODULE getKernel32(DWORD myHash) {
 	HMODULE kernel32;
 
-	// 获取PEB结构地址（在x64位系统中的偏移量，32位不同）
 	INT_PTR peb = __readgsqword(0x60);
 
-	auto modList = 0x18; // PEB_LDR_DATA结构中模块列表偏移量
-	auto modListFlink = 0x18; // LDR_DATA_TABLE_ENTRY结构中下一个模块的偏移量
-	auto kernelBaseAddr = 0x10; // LDR_DATA_TABLE_ENTRY结构中映像基地址的偏移量
+	auto modList = 0x18; 
+	auto modListFlink = 0x18; 
+	auto kernelBaseAddr = 0x10;
 
-	// 获取PEB_LDR_DATA结构中的模块列表指针
 	auto mdllist = *(INT_PTR*)(peb + modList);
 
-	// 获取第一个模块的LDR_DATA_TABLE_ENTRY结构中的下一个模块的指针
 	auto mlink = *(INT_PTR*)(mdllist + modListFlink);
-
-	// 获取kernel32.dll的基地址
+	
 	auto krnbase = *(INT_PTR*)(mlink + kernelBaseAddr);
 
 	auto mdl = (LDR_MODULE*)mlink;
 
-	// 遍历模块列表，查找kernel32.dll模块
 	do {
-		mdl = (LDR_MODULE*)mdl->e[0].Flink; // 获取下一个模块的LDR_MODULE结构指针
-		if (mdl->base != nullptr) { // 确认模块的基地址不为空
-			if (calcMyHashBase(mdl) == myHash) { // 比较模块基地址的hash值是否与目标值相同，即找到了kernel32.dll
+		mdl = (LDR_MODULE*)mdl->e[0].Flink; 
+		if (mdl->base != nullptr) {
+			if (calcMyHashBase(mdl) == myHash) {
 				break;
 			}
 		}
-	} while (mlink != (INT_PTR)mdl); // 如果遍历到的模块指针等于最开始的指针，则已遍历完整个模块列表
+	} while (mlink != (INT_PTR)mdl);
 
-	kernel32 = (HMODULE)mdl->base; // 将kernel32.dll模块的基地址保存在kernel32变量中
+	kernel32 = (HMODULE)mdl->base;
 	return kernel32;
 }
 
-//列出kernel32.dll中的api函数，计算hash与传入的目标hash对比
 static LPVOID getAPIAddr(HMODULE h, DWORD myHash) {
 	PIMAGE_DOS_HEADER img_dos_header = (PIMAGE_DOS_HEADER)h;
 	PIMAGE_NT_HEADERS img_nt_header = (PIMAGE_NT_HEADERS)((LPBYTE)h + img_dos_header->e_lfanew);
