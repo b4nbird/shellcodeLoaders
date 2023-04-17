@@ -105,7 +105,7 @@ FARPROC myGetProcAddress(HMODULE hModule, LPCSTR lpProcName) {
 	return NULL;
 }
 
-// encrypted module name (user32.dll)
+// encrypted module name (kernel32.dll)
 char s_dll[] = { 0x1f, 0xd, 0x1b, 0x1d, 0xc, 0x1f, 0x72, 0x46, 0x4b, 0x17, 0x18, 0x18 };
 
 // key
@@ -136,7 +136,7 @@ void decode() {
 	XOR((char*)s_dll, sizeof(s_dll), s_key, sizeof(s_key));
 
 	wchar_t wtext[20];
-	mbstowcs(wtext, s_dll, strlen(s_dll) + 1); //plus null
+	mbstowcs(wtext, s_dll, strlen(s_dll) + 1);
 	LPWSTR user_dll = wtext;
 
 	HMODULE mod = myGetModuleHandle(user_dll);
